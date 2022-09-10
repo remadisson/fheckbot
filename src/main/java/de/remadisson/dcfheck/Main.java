@@ -26,11 +26,12 @@ public class Main extends ListenerAdapter {
     public static String botCommandIndicator = ";";
     public static JDA jda;
     public static Guild guild;
+    private static final String tokenFhot = "MTAxNDkzNDkxMzA3NTY1NDcwNg.GamqFm.0aJP93XFNyJiRVExl_wtn1cHsWbmGWDLMYcBZM";
 
     public static void main(String[] args){
         //TODO token in ARGS instead of direct input from CODE
 
-        JDABuilder builder = JDABuilder.createDefault("MTAxNDkzNDkxMzA3NTY1NDcwNg.GamqFm.0aJP93XFNyJiRVExl_wtn1cHsWbmGWDLMYcBZM");
+        JDABuilder builder = JDABuilder.createDefault(args == null ? tokenFhot : (args.length == 0 ? tokenFhot : (args[0] == null ? tokenFhot : args[0])));
 
         // Disable parts of the cache
         builder.disableCache(CacheFlag.MEMBER_OVERRIDES);

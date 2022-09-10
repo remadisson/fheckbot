@@ -47,7 +47,7 @@ public class PlayerManager {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
                 musicManager.scheduler.queue(audioTrack);
-                //textChannel.sendMessage("Der Track `" + audioTrack.getInfo().title + "` von `" + audioTrack.getInfo().author + "` wurde der Playlist hinzugefügt.").queue();
+                event.reply("Der Track `" + audioTrack.getInfo().title + "` von `" + audioTrack.getInfo().author + "` wurde der Playlist hinzugefügt.").queue();
             }
 
             @Override
