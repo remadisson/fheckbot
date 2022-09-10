@@ -1,62 +1,24 @@
 package de.remadisson.dcfheck.commands;
 
-import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.lavaplayer.PlayerManager;
+import de.remadisson.dcfheck.manager.CInterface;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 
-public class PlayCommand extends ListenerAdapter {
-
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID)) return;
-
-        String[] message = event.getMessage().getContentDisplay().split(" ");
-        String arg0 = message[0];
-        String indicator = arg0.split("")[0];
-        String command = arg0.substring(1);
-        String[] args = Arrays.copyOfRange(message, 1, message.length);
-
-        if(!indicator.equals(Main.botCommandIndicator) && !event.getAuthor().getId().equals(event.getGuild().getSelfMember().getId())){ event.getMessage().delete().queue(); return; }
-        if(!command.equalsIgnoreCase("play")) return;
-
-        System.out.println(event.getAuthor().getName() + " ("+event.getAuthor().getId()+") used: '" + event.getMessage() + "'");
-
-        if(!event.getMember().getVoiceState().inAudioChannel()) {
-
-            textChannel.sendMessage("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue(msg -> {
-                        msg.delete().queueAfter(20, TimeUnit.SECONDS);
-                    });
-            return;
-        }
-
-        if(!event.getGuild().getSelfMember().getVoiceState().inAudioChannel()){
-            final AudioManager audioManager = event.getGuild().getAudioManager();
-            final VoiceChannel vc = (VoiceChannel) event.getMember().getVoiceState().getChannel();
-            audioManager.openAudioConnection(vc);
-        } else if(!Objects.equals(event.getMember().getVoiceState().getChannel(), event.getGuild().getSelfMember().getVoiceState().getChannel()) && !event.getAuthor().getId().equals("268362677313601536")) {
-            return;
-        }
-
-        String link = String.join(" ", args);
-        boolean isUrl = isUrl(link);
-        if(!isUrl){
-            link = "ytsearch:" + link + " audio";
-        }
-
-        PlayerManager.getINSTANCE().loadAndPlay(event.getChannel().asTextChannel(), args, link, !isUrl);
-    }
+public class PlayCommand implements CInterface {
 
     public boolean isUrl(String link) {
         try{
@@ -65,5 +27,59 @@ public class PlayCommand extends ListenerAdapter {
         } catch(URISyntaxException ex){
             return false;
         }
+    }
+
+    @Override
+    public String getName() {
+        return "play";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Plays the Song/Playlist injected via Link or via search.";
+    }
+
+    @Override
+    public List<OptionData> getOptionData() {
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.STRING, "arg", "Just type your search or insert a link.", true));
+        return data;
+    }
+
+    @Override
+    public void execute(SlashCommandInteractionEvent event) {
+        TextChannel textChannel = event.getChannel().asTextChannel();
+        if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID)) {event.reply("Du kannst hier diesen Command nicht benutzen!").queue(msg -> {
+            msg.deleteOriginal().queueAfter(10, TimeUnit.SECONDS);
+        }); return;}
+
+        System.out.println();
+        System.out.println(event.getCommandPath());
+        String args = Objects.requireNonNull(event.getOption("arg")).getAsString();
+
+        System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() + " " + args + "'");
+
+        if(!event.getMember().getVoiceState().inAudioChannel()) {
+
+            event.reply("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue(msg -> {
+                msg.deleteOriginal().queueAfter(30, TimeUnit.SECONDS);
+            });
+            return;
+        }
+        if(!event.getGuild().getSelfMember().getVoiceState().inAudioChannel()){
+            final AudioManager audioManager = event.getGuild().getAudioManager();
+            final VoiceChannel vc = (VoiceChannel) event.getMember().getVoiceState().getChannel();
+            audioManager.openAudioConnection(vc);
+        } else if(!Objects.equals(event.getMember().getVoiceState().getChannel(), event.getGuild().getSelfMember().getVoiceState().getChannel()) && !event.getUser().getId().equals("268362677313601536")) {
+            return;
+        }
+
+        String link = args;
+        boolean isUrl = isUrl(link);
+        if(!isUrl){
+            link = "ytsearch:" + link + " audio";
+        }
+
+        PlayerManager.getINSTANCE().loadAndPlay(event, args, link, !isUrl);
     }
 }

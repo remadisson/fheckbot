@@ -57,7 +57,6 @@ public class TrackScheduler extends AudioEventAdapter {
             nextTrack();
         } else {
            if(queue.isEmpty() && audioPlayer.getPlayingTrack() == null) {
-               System.out.println("IS EMPTY AND FOR SOME REASON TRIGGERING");
             Main.jda.getPresence().setActivity(Activity.watching("DUCK YOU!"));
             PlayerManager.getINSTANCE().stopAndClearPlaying(Main.guild);
            }

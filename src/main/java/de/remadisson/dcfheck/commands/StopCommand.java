@@ -1,43 +1,50 @@
 package de.remadisson.dcfheck.commands;
 
-import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.lavaplayer.PlayerManager;
+import de.remadisson.dcfheck.manager.CInterface;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
-public class StopCommand extends ListenerAdapter {
+public class StopCommand implements CInterface {
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public String getName() {
+        return "stop";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Stops and disconnects the Music-Bot.";
+    }
+
+    @Override
+    public List<OptionData> getOptionData() {
+        return null;
+    }
+
+    @Override
+    public void execute(SlashCommandInteractionEvent event) {
         TextChannel textChannel = event.getChannel().asTextChannel();
         if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID)) return;
 
-        String[] message = event.getMessage().getContentDisplay().split(" ");
-        String arg0 = message[0];
-        String indicator = arg0.split("")[0];
-        String command = arg0.substring(1);
-        String[] args = Arrays.copyOfRange(message, 1, message.length);
-
-        //if(!indicator.equals(main.botCommandIndicator) && !event.getAuthor().getId().equals(event.getGuild().getSelfMember().getId())){ event.getMessage().delete().queue(); return; }
-        if(!command.equalsIgnoreCase("stop")) return;
-        System.out.println(event.getAuthor().getName() + " ("+event.getAuthor().getId()+") used: '" + event.getMessage().getContentDisplay() + "'");
+        System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() + "'");
 
         if(!event.getMember().getVoiceState().inAudioChannel()) {
-            textChannel.sendMessage("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue();
+            event.reply("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue();
             return;
         }
 
         if(!event.getGuild().getSelfMember().getVoiceState().inAudioChannel()) return;
 
-        if(!Objects.equals(event.getMember().getVoiceState().getChannel(), event.getGuild().getSelfMember().getVoiceState().getChannel()) && !event.getAuthor().getId().equals("268362677313601536")) return;
+        if(!Objects.equals(event.getMember().getVoiceState().getChannel(), event.getGuild().getSelfMember().getVoiceState().getChannel()) && !event.getUser().getId().equals("268362677313601536")) return;
 
         PlayerManager.getINSTANCE().stopAndClearPlaying(textChannel.getGuild());
 
-        textChannel.sendMessage("Musik-Widergabe wurde angehalten. (Queue ist leer)").queue();
+        event.reply("Musik-Widergabe wurde angehalten. (Queue ist leer)").queue();
     }
-
 }

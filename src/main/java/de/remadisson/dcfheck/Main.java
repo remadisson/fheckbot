@@ -5,6 +5,7 @@ import de.remadisson.dcfheck.commands.PlayCommand;
 import de.remadisson.dcfheck.commands.SkipCommand;
 import de.remadisson.dcfheck.commands.StopCommand;
 import de.remadisson.dcfheck.event.AuditLogger;
+import de.remadisson.dcfheck.manager.CommandManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -21,7 +22,7 @@ import javax.security.auth.login.LoginException;
 
 public class Main extends ListenerAdapter {
 
-    public static String botChannelID= "1015745887395397692";
+    public static String botChannelID= null;
     public static String botCommandIndicator = ";";
     public static JDA jda;
     public static Guild guild;
@@ -49,13 +50,16 @@ public class Main extends ListenerAdapter {
 
         builder.setEventPassthrough(true);
 
+        CommandManager commandManager = new CommandManager();
+        commandManager.add(new PlayCommand());
+        commandManager.add(new ClearCommand());
+        commandManager.add(new SkipCommand());
+        commandManager.add(new StopCommand());
+
         // Registering AuditLogger -> Logs AuditLogs into a channel.
         builder.addEventListeners(new AuditLogger());
-        builder.addEventListeners(new PlayCommand());
-        builder.addEventListeners(new SkipCommand());
-        builder.addEventListeners(new StopCommand());
         builder.addEventListeners(new Main());
-        builder.addEventListeners(new ClearCommand());
+        builder.addEventListeners(commandManager);
 
 
         try {
@@ -73,6 +77,10 @@ public class Main extends ListenerAdapter {
     public void onReady(ReadyEvent e){
         System.out.println("Ready!");
         guild = jda.getGuildById("763096399071674438");
+
+        if(botChannelID == null){
+            botChannelID = jda.getTextChannelsByName("bot-commands", false).get(0).getId();
+        }
     }
 
 }
