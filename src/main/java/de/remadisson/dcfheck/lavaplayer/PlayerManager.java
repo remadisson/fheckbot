@@ -11,11 +11,13 @@ import de.remadisson.dcfheck.Main;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PlayerManager {
 
@@ -39,13 +41,13 @@ public class PlayerManager {
         });
     }
 
-    public void loadAndPlay(TextChannel textChannel, String[] args, String trackURL, boolean isSearch){
-        final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
+    public void loadAndPlay(SlashCommandInteractionEvent event, String args, String trackURL, boolean isSearch){
+        final GuildMusicManager musicManager = this.getMusicManager(Objects.requireNonNull(event.getGuild()));
         this.audioPlayerManager.loadItemOrdered(musicManager, trackURL, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
                 musicManager.scheduler.queue(audioTrack);
-                textChannel.sendMessage("Der Track `" + audioTrack.getInfo().title + "` von `" + audioTrack.getInfo().author + "` wurde der Playlist hinzugefügt.").queue();
+                //textChannel.sendMessage("Der Track `" + audioTrack.getInfo().title + "` von `" + audioTrack.getInfo().author + "` wurde der Playlist hinzugefügt.").queue();
             }
 
             @Override
@@ -53,13 +55,14 @@ public class PlayerManager {
                 final List<AudioTrack> tracks = audioPlaylist.getTracks();
                 if (isSearch && !tracks.isEmpty()) {
                     musicManager.scheduler.queue(tracks.get(0));
-                    textChannel.sendMessage("Der Track `" + tracks.get(0).getInfo().title + "` von `" + tracks.get(0).getInfo().author + "` wurde der Queue hinzugefügt.").queue();
+                    event.reply("Der Track `" + tracks.get(0).getInfo().title + "` von `" + tracks.get(0).getInfo().author + "` wurde der Queue hinzugefügt.").queue();
                 } else if(!isSearch){
                     for(AudioTrack track : tracks){
                         musicManager.scheduler.queue(track);
                     }
                     System.out.println("Added " + tracks.size() + " to the queue");
-                    textChannel.sendMessage("Hinzufügen von  `" + tracks.size() + "` Tracks von der Playlist `" + audioPlaylist.getName() + "`").queue();
+                    event.reply("Hinzufügen von  `" + tracks.size() + "` Tracks von der Playlist `" + audioPlaylist.getName() + "`\nJetzt spielt: `" + musicManager.audioPlayer.getPlayingTrack().getInfo().title + "` von `" + musicManager.audioPlayer.getPlayingTrack().getInfo().author + "`").queue();
+
                 }
 
 
@@ -67,7 +70,7 @@ public class PlayerManager {
 
             @Override
             public void noMatches() {
-                textChannel.sendMessage("Mit der Suche `" + String.join(" ", args) + "` konnte nichts angefangen werden.").queue();
+                event.reply("Mit der Suche `" + args + "` konnte nichts angefangen werden.").queue();
                 System.out.println("No match found.");
             }
 
@@ -85,16 +88,17 @@ public class PlayerManager {
         gm.scheduler.queue.clear();
         disconnectAudio(guild);
     }
-    public void nextTrack(TextChannel textChannel){
+    public void nextTrack(SlashCommandInteractionEvent event){
+        TextChannel textChannel = event.getChannel().asTextChannel();
         final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
         if(musicManager.scheduler.queue.isEmpty()) {
-            textChannel.sendMessage("Die Playlist ist leer.").queue();
+            event.reply("Die Playlist ist leer.").queue();
             stopAndClearPlaying(textChannel.getGuild());
             return;
         }
 
         musicManager.scheduler.nextTrack();
-        textChannel.sendMessage("Jetzt spielt: `" + musicManager.audioPlayer.getPlayingTrack().getInfo().title + "` von `" + musicManager.audioPlayer.getPlayingTrack().getInfo().author + "`").queue();
+        event.reply("Jetzt spielt: `" + musicManager.audioPlayer.getPlayingTrack().getInfo().title + "` von `" + musicManager.audioPlayer.getPlayingTrack().getInfo().author + "`").queue();
     }
 
     public void disconnectAudio(Guild guild){
