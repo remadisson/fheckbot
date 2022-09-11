@@ -31,6 +31,25 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
+    public AudioTrackInfo skipTopSongIndex(int Index){
+        int countingIndex = 0;
+        AudioTrack track = null;
+        if(Index > this.queue.size()) Index = this.queue.size()-1;
+        for(AudioTrack audioTrack : this.queue){
+            if(countingIndex == Index-1){
+                track = this.queue.poll();
+                this.audioPlayer.startTrack(track, false);
+                Main.jda.getPresence().setActivity(Activity.listening(track.getInfo().title + " - " + track.getInfo().author));
+                System.out.println("Left over Queue size: " + queue.size());
+            } else {
+                this.queue.remove(audioTrack);
+            }
+
+            countingIndex++;
+        }
+        return track.getInfo();
+    }
+
     public void nextTrack() {
         if(queue.isEmpty() && audioPlayer.getPlayingTrack() == null){
             System.out.println("Stopped playing");
@@ -46,8 +65,6 @@ public class TrackScheduler extends AudioEventAdapter {
         AudioTrackInfo info = track.getInfo();
         Main.jda.getPresence().setActivity(Activity.listening(info.title + " - " + info.author));
         System.out.println("2 Now playing: " + info.title + " - " + info.author + "("+ String.format("%02d:%02d:%02d", (int) info.length/1000/60/60, (int) info.length/1000/60, (int) info.length/1000-((int) info.length/1000/60*100)) + ")");
-
-
     }
 
 

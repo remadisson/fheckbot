@@ -88,6 +88,8 @@ public class PlayerManager {
         gm.scheduler.queue.clear();
         disconnectAudio(guild);
     }
+
+
     public void nextTrack(SlashCommandInteractionEvent event){
         TextChannel textChannel = event.getChannel().asTextChannel();
         final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
