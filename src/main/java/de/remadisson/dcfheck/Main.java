@@ -26,15 +26,13 @@ import javax.security.auth.login.LoginException;
 
 public class Main extends ListenerAdapter {
 
-    public static String botChannelID= null;
-    public static String botCommandIndicator = ";";
+    public static String botChannelID = null;
     public static JDA jda;
     public static Guild guild;
     private static final String tokenFhot = "";
 
     public static void main(String[] args){
         //TODO token in ARGS instead of direct input from CODE
-        System.out.println(args[0]);
         JDABuilder builder = JDABuilder.createDefault(args == null ? tokenFhot : (args.length == 0 ? tokenFhot : (args[0] == null ? tokenFhot : args[0])));
 
         // Disable parts of the cache

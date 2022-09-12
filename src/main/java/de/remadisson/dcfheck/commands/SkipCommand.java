@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.remadisson.dcfheck.Main;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import de.remadisson.dcfheck.manager.CInterface;
+import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -37,16 +38,16 @@ public class SkipCommand implements CInterface {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID)) return;
+        Channel textChannel = event.getChannel();
+        if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID) && !textChannel.getId().equalsIgnoreCase("811511713475067904")) return;
 
 
 
         System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() +  "'");
 
         if(!event.getMember().getVoiceState().inAudioChannel()) {
-            textChannel.sendMessage("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue(msg -> {
-                msg.delete().queueAfter(20, TimeUnit.SECONDS);
+            event.reply("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue(msg -> {
+                msg.deleteOriginal().queueAfter(20, TimeUnit.SECONDS);
             });
             return;
         }

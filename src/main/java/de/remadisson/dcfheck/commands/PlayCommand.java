@@ -3,6 +3,7 @@ package de.remadisson.dcfheck.commands;
 import de.remadisson.dcfheck.Main;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import de.remadisson.dcfheck.manager.CInterface;
+import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -49,15 +50,12 @@ public class PlayCommand implements CInterface {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID)) {event.reply("Du kannst hier diesen Command nicht benutzen!").queue(msg -> {
+        Channel channel = event.getChannel();
+        if(!channel.getId().equalsIgnoreCase(Main.botChannelID) && !channel.getId().equalsIgnoreCase("811511713475067904")) {event.reply("Du kannst hier diesen Command nicht benutzen!").queue(msg -> {
             msg.deleteOriginal().queueAfter(10, TimeUnit.SECONDS);
         }); return;}
 
-        System.out.println();
-        System.out.println(event.getCommandPath());
         String args = Objects.requireNonNull(event.getOption("arg")).getAsString();
-
         System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() + " " + args + "'");
 
         if(!event.getMember().getVoiceState().inAudioChannel()) {
