@@ -62,7 +62,6 @@ public class PlayerManager {
                     }
                     System.out.println("Added " + tracks.size() + " to the queue");
                     event.reply("Hinzufügen von  `" + tracks.size() + "` Tracks von der Playlist `" + audioPlaylist.getName() + "`\nJetzt spielt: `" + musicManager.audioPlayer.getPlayingTrack().getInfo().title + "` von `" + musicManager.audioPlayer.getPlayingTrack().getInfo().author + "`").queue();
-
                 }
 
 

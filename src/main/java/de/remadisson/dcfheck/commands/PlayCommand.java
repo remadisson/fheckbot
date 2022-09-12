@@ -6,6 +6,7 @@ import de.remadisson.dcfheck.manager.CInterface;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -60,7 +61,6 @@ public class PlayCommand implements CInterface {
         System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() + " " + args + "'");
 
         if(!event.getMember().getVoiceState().inAudioChannel()) {
-
             event.reply("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue(msg -> {
                 msg.deleteOriginal().queueAfter(30, TimeUnit.SECONDS);
             });

@@ -34,7 +34,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public AudioTrackInfo skipTopSongIndex(int Index){
         int countingIndex = 0;
         AudioTrack track = null;
-        if(Index > this.queue.size()) Index = this.queue.size()-1;
+        if(Index > this.queue.size()) Index = (this.queue.size()-1);
         for(AudioTrack audioTrack : this.queue){
             if(countingIndex == Index-1){
                 track = this.queue.poll();
