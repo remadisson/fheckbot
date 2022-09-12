@@ -5,6 +5,7 @@ import de.remadisson.dcfheck.commands.PlayCommand;
 import de.remadisson.dcfheck.commands.SkipCommand;
 import de.remadisson.dcfheck.commands.StopCommand;
 import de.remadisson.dcfheck.event.AuditLogger;
+import de.remadisson.dcfheck.event.PrivateMessages;
 import de.remadisson.dcfheck.manager.CommandManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -46,8 +47,9 @@ public class Main extends ListenerAdapter {
         builder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         builder.enableIntents(GatewayIntent.GUILD_PRESENCES);
+        builder.enableIntents(GatewayIntent.GUILD_MESSAGES);
         //builder.enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS);
-        //builder.enableIntents(GatewayIntent.DIRECT_MESSAGES);
+        builder.enableIntents(GatewayIntent.DIRECT_MESSAGES);
 
         builder.setEventPassthrough(true);
 
@@ -61,6 +63,7 @@ public class Main extends ListenerAdapter {
         builder.addEventListeners(new AuditLogger());
         builder.addEventListeners(new Main());
         builder.addEventListeners(commandManager);
+        builder.addEventListeners(new PrivateMessages());
 
 
         try {
