@@ -10,14 +10,17 @@ import de.remadisson.dcfheck.manager.CommandManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 
@@ -27,11 +30,11 @@ public class Main extends ListenerAdapter {
     public static String botCommandIndicator = ";";
     public static JDA jda;
     public static Guild guild;
-    private static final String tokenFhot = "MTAxNDkzNDkxMzA3NTY1NDcwNg.GamqFm.0aJP93XFNyJiRVExl_wtn1cHsWbmGWDLMYcBZM";
+    private static final String tokenFhot = "";
 
     public static void main(String[] args){
         //TODO token in ARGS instead of direct input from CODE
-
+        System.out.println(args[0]);
         JDABuilder builder = JDABuilder.createDefault(args == null ? tokenFhot : (args.length == 0 ? tokenFhot : (args[0] == null ? tokenFhot : args[0])));
 
         // Disable parts of the cache
@@ -87,4 +90,8 @@ public class Main extends ListenerAdapter {
         }
     }
 
+    @Override
+    public void onShutdown(@NotNull ShutdownEvent event) {
+        jda.getPresence().setPresence(OnlineStatus.OFFLINE, false);
+    }
 }

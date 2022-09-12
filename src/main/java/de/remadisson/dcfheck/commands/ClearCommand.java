@@ -37,13 +37,12 @@ public class ClearCommand implements CInterface {
 
         System.out.println("Clearing ´"+event.getMessageChannel().getName()+"´.");
 
-        event.reply("Channel wird geleert!").queue();
         event.getChannel().asTextChannel().createCopy().queue(textChannel -> {
-            if(textChannel.getName().equalsIgnoreCase("bot-command")){
+            if(textChannel.getName().equalsIgnoreCase("bot-commands")){
                 Main.botChannelID = textChannel.getId();
             }
         });
-        event.getChannel().asTextChannel().delete().queue();
+        event.getChannel().delete().queue();
 
         /**
         MessageHistory history = MessageHistory.getHistoryFromBeginning(event.getMessageChannel()).complete();
