@@ -33,8 +33,6 @@ public class StopCommand implements CInterface {
         Channel textChannel = event.getChannel();
         if(!textChannel.getId().equalsIgnoreCase(Main.botChannelID) && !textChannel.getId().equalsIgnoreCase("811511713475067904")) return;
 
-        System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() + "'");
-
         if(!event.getMember().getVoiceState().inAudioChannel()) {
             event.reply("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue();
             return;

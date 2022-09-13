@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.files;
 import net.dv8tion.jda.api.entities.Activity;
 
 import java.util.concurrent.BlockingQueue;
@@ -27,7 +28,7 @@ public class TrackScheduler extends AudioEventAdapter {
         } else {
             AudioTrackInfo info = audioPlayer.getPlayingTrack().getInfo();
             Main.jda.getPresence().setActivity(Activity.listening(info.title + " - " + info.author));
-            System.out.println("1 Now playing: " + info.title + " - " + info.author + "(" + String.format("%02d:%02d:%02d", (int) info.length / 1000 / 60 / 60, (int) info.length / 1000 / 60, (int) info.length / 1000 - ((int) info.length / 1000 / 60 * 100)) + ")");
+            System.out.println("Initiate: Now playing: " + info.title + " - " + info.author + "(" + files.songLength(info.length) + ") | Queue " + queue.size());
         }
     }
 
@@ -40,7 +41,8 @@ public class TrackScheduler extends AudioEventAdapter {
                 track = this.queue.poll();
                 this.audioPlayer.startTrack(track, false);
                 Main.jda.getPresence().setActivity(Activity.listening(track.getInfo().title + " - " + track.getInfo().author));
-                System.out.println("Left over Queue size: " + queue.size());
+                System.out.println("Skip: Initiate: Now playing: " + track.getInfo().title + " - " + track.getInfo().author + "(" + files.songLength(track.getInfo().length) + ") | Queue " + queue.size());
+                return track.getInfo();
             } else {
                 this.queue.remove(audioTrack);
             }
@@ -63,7 +65,7 @@ public class TrackScheduler extends AudioEventAdapter {
         assert track != null;
         AudioTrackInfo info = track.getInfo();
         Main.jda.getPresence().setActivity(Activity.listening(info.title + " - " + info.author));
-        System.out.println("2 Now playing: " + info.title + " - " + info.author + "("+ String.format("%02d:%02d:%02d", (int) info.length/1000/60/60, (int) info.length/1000/60, (int) info.length/1000-((int) info.length/1000/60*100)) + ")");
+        System.out.println("Now playing: " + info.title + " - " + info.author + "(" + files.songLength(info.length) + ") | Queue " + queue.size());
     }
 
 

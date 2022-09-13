@@ -60,7 +60,6 @@ public class PlayerManager {
                     for(AudioTrack track : tracks){
                         musicManager.scheduler.queue(track);
                     }
-                    System.out.println("Added " + tracks.size() + " to the queue");
                     event.reply("Hinzufügen von  `" + tracks.size() + "` Tracks von der Playlist `" + audioPlaylist.getName() + "`\nJetzt spielt: `" + musicManager.audioPlayer.getPlayingTrack().getInfo().title + "` von `" + musicManager.audioPlayer.getPlayingTrack().getInfo().author + "`").queue();
                 }
 
@@ -70,7 +69,6 @@ public class PlayerManager {
             @Override
             public void noMatches() {
                 event.reply("Mit der Suche `" + args + "` konnte nichts angefangen werden.").queue();
-                System.out.println("No match found.");
             }
 
             @Override

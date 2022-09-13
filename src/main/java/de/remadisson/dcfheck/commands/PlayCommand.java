@@ -1,6 +1,7 @@
 package de.remadisson.dcfheck.commands;
 
 import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.files;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import de.remadisson.dcfheck.manager.CInterface;
 import net.dv8tion.jda.api.entities.Channel;
@@ -56,7 +57,6 @@ public class PlayCommand implements CInterface {
         }); return;}
 
         String args = Objects.requireNonNull(event.getOption("arg")).getAsString();
-        System.out.println(event.getUser().getName() + " ("+event.getUser().getId()+") used: '" +event.getCommandString() + " " + args + "'");
 
         if(!event.getMember().getVoiceState().inAudioChannel()) {
             event.reply("Du musst in einem Voice-Channel sein, um mich zu benutzten.").queue(msg -> {
