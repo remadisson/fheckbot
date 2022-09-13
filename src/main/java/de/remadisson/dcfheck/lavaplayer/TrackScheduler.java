@@ -44,10 +44,9 @@ public class TrackScheduler extends AudioEventAdapter {
             } else {
                 this.queue.remove(audioTrack);
             }
-
             countingIndex++;
         }
-        return track.getInfo();
+        return null;
     }
 
     public void nextTrack() {
