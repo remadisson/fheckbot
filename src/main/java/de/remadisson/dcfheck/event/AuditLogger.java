@@ -91,13 +91,29 @@ public class AuditLogger extends ListenerAdapter {
             allPermissions.removeAll(event.getNewPermissions().stream().map(Permission::getName).toList());
             allPermissions.addAll(newPermissions);
 
+            for(int page = 0; page < (allPermissions.size() > 15 ? Math.ceil((double) allPermissions.size()/15) : 1);page++){
+                StringBuilder pageContent = new StringBuilder("");
+                for(int row = 0; row < (allPermissions.size() < 15 ? allPermissions.size() : 14); row++){
+                    int permissionInList = page == 0 ? row : (Math.subtractExact((page * 15), 1)) + row;
 
-            eb.addField("The following permissions have changed:", "\n" + allPermissions.stream().map(pname -> {
-                if(newPermissions.contains(pname)){
-                    return "- **" + pname + "** from *false* to **true**";
+                    try {
+                        String permission = allPermissions.get(permissionInList);
+                        if (newPermissions.contains(permission)) {
+                            pageContent.append("\n" + "- **").append(permission).append("** from *false* to **true**");
+                        } else {
+                            pageContent.append("\n" + "- **").append(permission).append("** from *true* to **false**");
+                        }
+                    }catch(IndexOutOfBoundsException ex){
+                        break;
+                    }
                 }
-                return "- **" + pname + "** from *true* to***false**";
-            }).collect(Collectors.joining("\n")), false);
+                if(page == 0){
+                    eb.addField("The following permissions have changed:", pageContent.insert(0, "\n").toString(), false);
+                } else {
+                    eb.addField("", pageContent.toString(), true);
+                }
+            }
+
             eb.setAuthor(entry.getUser().getName(), null, entry.getUser().getAvatarUrl());
             Main.sendEmbedMessage(Objects.requireNonNull(event.getGuild().getTextChannelById("1014932313005625477")), eb);
         });
