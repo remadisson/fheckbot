@@ -3,9 +3,8 @@ package de.remadisson.dcfheck.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.remadisson.dcfheck.Main;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
-import de.remadisson.dcfheck.manager.CInterface;
+import de.remadisson.dcfheck.manager.CommandExecutor;
 import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class SkipCommand implements CInterface {
+public class SkipCommand implements CommandExecutor {
 
     @Override
     public String getName() {

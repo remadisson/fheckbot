@@ -1,14 +1,11 @@
 package de.remadisson.dcfheck.commands;
 
 import de.remadisson.dcfheck.Main;
-import de.remadisson.dcfheck.files;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
-import de.remadisson.dcfheck.manager.CInterface;
+import de.remadisson.dcfheck.manager.CommandExecutor;
 import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -21,7 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 
-public class PlayCommand implements CInterface {
+public class PlayCommand implements CommandExecutor {
 
     public boolean isUrl(String link) {
         try{

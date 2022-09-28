@@ -2,16 +2,15 @@ package de.remadisson.dcfheck.commands;
 
 import de.remadisson.dcfheck.Main;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
-import de.remadisson.dcfheck.manager.CInterface;
+import de.remadisson.dcfheck.manager.CommandExecutor;
 import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.List;
 import java.util.Objects;
 
-public class StopCommand implements CInterface {
+public class StopCommand implements CommandExecutor {
 
     @Override
     public String getName() {

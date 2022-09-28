@@ -2,7 +2,7 @@ package de.remadisson.dcfheck.commands;
 
 import de.remadisson.dcfheck.Main;
 import de.remadisson.dcfheck.files;
-import de.remadisson.dcfheck.manager.CInterface;
+import de.remadisson.dcfheck.manager.CommandExecutor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class ClearCommand implements CInterface {
+public class ClearCommand implements CommandExecutor {
 
     String fheckomatorID = "763096551743553557";
 

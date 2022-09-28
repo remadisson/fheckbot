@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.List;
 
-public interface CInterface {
+public interface CommandExecutor {
     String getName();
     String getDescription();
     List<OptionData> getOptionData();

@@ -12,12 +12,12 @@ import java.util.List;
 
 public class CommandManager extends ListenerAdapter {
 
-    private List<CInterface> commands = new ArrayList<>();
+    private List<CommandExecutor> commands = new ArrayList<>();
 
     @Override
     public void onReady(@NotNull ReadyEvent event){
         for(Guild guild : event.getJDA().getGuilds()){
-            for(CInterface command : commands){
+            for(CommandExecutor command : commands){
 
                 if(command.getOptionData() == null || command.getOptionData().isEmpty()){
                     guild.upsertCommand(command.getName(), command.getDescription()).queue();
@@ -31,7 +31,7 @@ public class CommandManager extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         files.commandLog(event.getUser().getName() + " (" + event.getUser().getId() + ") used: '" + event.getCommandString() + "'");
-        for(CInterface command : commands){
+        for(CommandExecutor command : commands){
             if(command.getName().equalsIgnoreCase(event.getName())){
                 command.execute(event);
                 return;
@@ -39,7 +39,7 @@ public class CommandManager extends ListenerAdapter {
         }
     }
 
-    public void add(CInterface command){
+    public void add(CommandExecutor command){
         commands.add(command);
     }
 }
