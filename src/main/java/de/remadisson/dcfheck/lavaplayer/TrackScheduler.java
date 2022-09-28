@@ -28,7 +28,7 @@ public class TrackScheduler extends AudioEventAdapter {
         } else {
             AudioTrackInfo info = audioPlayer.getPlayingTrack().getInfo();
             Main.jda.getPresence().setActivity(Activity.listening(info.title + " - " + info.author));
-            System.out.println("Initiate: Now playing: " + info.title + " - " + info.author + "(" + files.songLength(info.length) + ") | Queue " + queue.size());
+            System.out.println("Initiate: Now playing: " + info.title + " - " + info.author + "(" + files.longToFormattedLength(info.length) + ") | Queue " + queue.size());
         }
     }
 
@@ -41,7 +41,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 track = this.queue.poll();
                 this.audioPlayer.startTrack(track, false);
                 Main.jda.getPresence().setActivity(Activity.listening(track.getInfo().title + " - " + track.getInfo().author));
-                System.out.println("Skip: Initiate: Now playing: " + track.getInfo().title + " - " + track.getInfo().author + "(" + files.songLength(track.getInfo().length) + ") | Queue " + queue.size());
+                System.out.println("Skip: Initiate: Now playing: " + track.getInfo().title + " - " + track.getInfo().author + "(" + files.longToFormattedLength(track.getInfo().length) + ") | Queue " + queue.size());
                 return track.getInfo();
             } else {
                 this.queue.remove(audioTrack);
@@ -65,7 +65,7 @@ public class TrackScheduler extends AudioEventAdapter {
         assert track != null;
         AudioTrackInfo info = track.getInfo();
         Main.jda.getPresence().setActivity(Activity.listening(info.title + " - " + info.author));
-        System.out.println("Now playing: " + info.title + " - " + info.author + "(" + files.songLength(info.length) + ") | Queue " + queue.size());
+        System.out.println("Now playing: " + info.title + " - " + info.author + "(" + files.longToFormattedLength(info.length) + ") | Queue " + queue.size());
     }
 
 
