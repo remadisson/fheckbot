@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Main extends ListenerAdapter {
 
@@ -32,7 +34,6 @@ public class Main extends ListenerAdapter {
     private static final String tokenFhot = "";
 
     public static void main(String[] args){
-        //TODO token in ARGS instead of direct input from CODE
         JDABuilder builder = JDABuilder.createDefault(args == null ? tokenFhot : (args.length == 0 ? tokenFhot : (args[0] == null ? tokenFhot : args[0])));
 
         // Disable parts of the cache
@@ -80,7 +81,7 @@ public class Main extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent e){
-        System.out.println("Ready!");
+        System.out.println(new GregorianCalendar().getTime().toLocaleString() + " > Ready!");
         guild = jda.getGuildById("763096399071674438");
 
         if(botChannelID == null){
