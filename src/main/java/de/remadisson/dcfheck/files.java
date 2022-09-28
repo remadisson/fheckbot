@@ -3,8 +3,11 @@ package de.remadisson.dcfheck;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class files {
@@ -12,12 +15,13 @@ public class files {
      * Class to hold messy general information / methods.
      */
 
-    public String createLog(String message){
-        return DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/YYYY", Locale.GERMANY).format(new Date().toInstant()) + " [LOG] " + message;
+    public static String createLog(String message){
+        SimpleDateFormat dtf = new SimpleDateFormat("HH:mm:ss - dd/MM/YYYY");
+        return dtf.format(new Date()) + " [LOG] " + message;
     }
 
     public static void commandLog(String log){
-        TextChannel channel = Main.jda.getTextChannelById("1014932313005625477");
+        TextChannel channel = Main.guild.getTextChannelById("1014932313005625477");
         assert channel != null;
         ThreadChannel thread = null;
         if(!channel.getThreadChannels().stream().map(ThreadChannel::getName).toList().contains("cmd-logger")){
@@ -27,14 +31,14 @@ public class files {
 
         thread = channel.getThreadChannels().stream().filter(threadChannel -> threadChannel.getName().equalsIgnoreCase("cmd-logger")).toList().get(0);
         thread.sendMessage(log).queue();
-        System.out.println(log);
+        System.out.println(createLog(log));
 
         /**
          * TODO REPLACE OLD "LOGGING" WITH NEW ONE, CREATING FILE API AND SAVE LOGS EVERY DAY
          */
     }
 
-    public static String songLength(long length){
+    public static String longToFormattedLength(long length){
         long second = (length / 1000) % 60;
         long minute = (length / (1000 * 60)) % 60;
         long hour = (length / (1000 * 60 * 60)) % 24;
