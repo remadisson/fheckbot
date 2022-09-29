@@ -88,6 +88,7 @@ public class PlayerManager {
 
 
     public void nextTrack(SlashCommandInteractionEvent event){
+        //TODO NOT CAST TO TEXTCHANNEL
         TextChannel textChannel = event.getChannel().asTextChannel();
         final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
         if(musicManager.scheduler.queue.isEmpty()) {

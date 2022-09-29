@@ -6,9 +6,11 @@ import de.remadisson.dcfheck.Main;
 import de.remadisson.dcfheck.files;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import express.Express;
+import express.middleware.Middleware;
 import express.utils.Status;
 import org.json.*;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 public class init {
@@ -17,11 +19,13 @@ public class init {
     public static void onExpress(){
         Express app = new Express();
 
-        app.get("/", ((req, res) -> {
+        app.use(Middleware.cors());
+
+        app.get("/queue", ((req, res) -> {
             AudioTrack current = PlayerManager.getINSTANCE().getMusicManager(Main.guild).scheduler.audioPlayer.getPlayingTrack();
             BlockingQueue<AudioTrack> queue = PlayerManager.getINSTANCE().getMusicManager(Main.guild).scheduler.queue;
             if(current == null){
-                res.send(new JSONObject("{\"status\": 404, \"message\": \"Derzeit ist nichts am spielen.\"}").toString());
+                res.send(new JSONObject("{\"status\": 404, \"message\": \"Derzeit spielt kein Lied.\"}").toString());
                 return;
             }
 
@@ -29,6 +33,12 @@ public class init {
             res.sendStatus(Status._200);
 
         }));
+
+                try {
+                    app.use("/", Middleware.statics("src/main/resources"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
         app.listen(8080);
         System.out.println("Express is running!");
@@ -44,7 +54,7 @@ public class init {
 
         for(int index = 0; index < queue.size(); index++){
             AudioTrackInfo queuedInfo = queue.stream().toList().get(index).getInfo();
-            queueJson.put(index,new JSONObject().put("Index of Queue: " + index, new JSONObject().put("title", queuedInfo.title).put("author", queuedInfo.author).put("length", files.longToFormattedLength(queuedInfo.length)).put("link", queuedInfo.uri)));
+            queueJson.put(index, new JSONObject().put("title", queuedInfo.title).put("author", queuedInfo.author).put("length", files.longToFormattedLength(queuedInfo.length)).put("link", queuedInfo.uri));
         }
 
         object.put("queue", queueJson);
