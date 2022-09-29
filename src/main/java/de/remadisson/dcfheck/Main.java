@@ -7,6 +7,7 @@ import de.remadisson.dcfheck.commands.StopCommand;
 import de.remadisson.dcfheck.event.AuditLogger;
 import de.remadisson.dcfheck.event.PrivateMessages;
 import de.remadisson.dcfheck.manager.CommandManager;
+import de.remadisson.dcfheck.web.init;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -87,6 +88,8 @@ public class Main extends ListenerAdapter {
         if(botChannelID == null){
             botChannelID = jda.getTextChannelsByName("bot-commands", false).get(0).getId();
         }
+
+        init.onExpress();
     }
 
     @Override
