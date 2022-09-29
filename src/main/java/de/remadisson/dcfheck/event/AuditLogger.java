@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 public class AuditLogger extends ListenerAdapter {
@@ -85,10 +84,14 @@ public class AuditLogger extends ListenerAdapter {
             eb.setDescription("at " + date.toLocaleString());
             eb.setColor(Color.RED);
 
+            // Getting the new-Permissions (Permissions that were false and are now set to true)
             ArrayList<String> newPermissions = new ArrayList<String>(event.getNewPermissions().stream().map(Permission::getName).toList());
             newPermissions.removeAll(event.getOldPermissions().stream().map(Permission::getName).toList());
+            // Getting the "old"-Permissions (Permissions that were true and are now set to false)
             ArrayList<String> allPermissions = new ArrayList<String>(event.getOldPermissions().stream().map(Permission::getName).toList());
+            // Removing Duplicates
             allPermissions.removeAll(event.getNewPermissions().stream().map(Permission::getName).toList());
+            // Adding new back to the list, so there is an all-changed-Permissions list
             allPermissions.addAll(newPermissions);
 
             for(int page = 0; page < (allPermissions.size() > 15 ? Math.ceil((double) allPermissions.size()/15) : 1);page++){
