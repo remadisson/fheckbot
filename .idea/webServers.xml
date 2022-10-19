@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1b6ad764-ebc2-442a-8fb6-ecd342b5ac50" name="vault" url="">
+        <fileTransfer rootFolder="/home/remadisson" accessType="SFTP" host="vault" port="12" sshConfigId="c5d21a7b-3266-41d2-8070-8fa9251c57bb" sshConfig="remadisson@vault:12 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
