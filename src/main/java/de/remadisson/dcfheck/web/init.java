@@ -2,53 +2,79 @@ package de.remadisson.dcfheck.web;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.enums.LogType;
 import de.remadisson.dcfheck.files;
 import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import express.Express;
 import express.middleware.Middleware;
-import express.utils.Status;
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 public class init {
 
-    public static JSONObject queuedJson = null;
     public static void onExpress(){
         Express app = new Express();
 
         app.use(Middleware.cors());
 
         app.get("/queue", ((req, res) -> {
-            AudioTrack current = PlayerManager.getINSTANCE().getMusicManager(Main.guild).scheduler.audioPlayer.getPlayingTrack();
-            BlockingQueue<AudioTrack> queue = PlayerManager.getINSTANCE().getMusicManager(Main.guild).scheduler.queue;
+            AudioTrack current = PlayerManager.getINSTANCE().getMusicManager().scheduler.audioPlayer.getPlayingTrack();
+
+            BlockingQueue<AudioTrack> queue = PlayerManager.getINSTANCE().getMusicManager().scheduler.queue;
             if(current == null){
                 res.send(new JSONObject("{\"status\": 404, \"message\": \"Derzeit spielt kein Lied.\"}").toString());
                 return;
             }
 
             res.send(getSongsAsJsonObject(current, queue).toString());
-            res.sendStatus(Status._200);
 
         }));
 
-                try {
-                    app.use("/", Middleware.statics("src/main/resources"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        app.get("/skip/:index", (req,res) ->{
+            try {
+                int index = Integer.parseInt(req.getParam("index"));
+
+                if(PlayerManager.getINSTANCE().getMusicManager().scheduler.queue.isEmpty()){
+                    res.send(new JSONObject().put("status", 400).put("message", "Bad Request: There is currently no song in the playlist.").toString());
+                    System.out.println("Response: " + new JSONObject().put("status", 400).put("message", "Bad Request: There is currently no song in the playlist.").toString());
+                    return;
                 }
 
+                if(PlayerManager.getINSTANCE().getMusicManager().audioPlayer.getPlayingTrack() == null){
+                    res.send(new JSONObject().put("status", 400).put("message", "Bad Request: There is no queue that can be skipped!").toString());
+                    System.out.println("Response: " + new JSONObject().put("status", 400).put("message", "Bad Request: There is no queue that can be skipped!").toString());
+                    return;
+                }
+
+                PlayerManager.getINSTANCE().getMusicManager().scheduler.skipToSongIndex(index);
+                files.log(LogType.INFO, "Express initated skip (" + index + ")");
+
+                res.send(new JSONObject().put("status", 200).put("message", "Skipped to " + index + "!").toString());
+
+            }catch(NumberFormatException ex){
+                res.send(new JSONObject().put("status", 400).put("message", "Bad Request: " + req.getParam("index") + " is no number.").toString());
+            }
+        });
+
+        app.use("/", ((request, response) -> {
+            response.redirect("https://fhot.remady.me/");
+        }));
+
         app.listen(8080);
-        System.out.println("Express is running!");
     }
 
     public static JSONObject getSongsAsJsonObject(AudioTrack current, BlockingQueue<AudioTrack> queue){
         JSONObject object = new JSONObject();
         AudioTrackInfo currentInfo = current.getInfo();
 
+        object.put("status", 200);
         object.put("currentlyPlaying", new JSONObject().put("title", currentInfo.title).put("author", currentInfo.author).put("length",files.longToFormattedLength(currentInfo.length)).put("link", currentInfo.uri));
+
+        if(queue.isEmpty()){
+            return object;
+        }
 
         JSONArray queueJson = new JSONArray();
 
