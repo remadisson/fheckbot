@@ -1,5 +1,6 @@
 package de.remadisson.dcfheck.manager;
 
+import de.remadisson.dcfheck.enums.LogType;
 import de.remadisson.dcfheck.files;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -30,7 +31,7 @@ public class CommandManager extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        files.commandLog(event.getUser().getName() + " (" + event.getUser().getId() + ") used: '" + event.getCommandString() + "'");
+        files.log(LogType.CMD, event.getUser().getName() + " (" + event.getUser().getId() + ") used: '" + event.getCommandString() + "'");
         for(CommandExecutor command : commands){
             if(command.getName().equalsIgnoreCase(event.getName())){
                 command.execute(event);

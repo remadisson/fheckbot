@@ -1,6 +1,7 @@
 package de.remadisson.dcfheck.commands;
 
 import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.enums.LogType;
 import de.remadisson.dcfheck.files;
 import de.remadisson.dcfheck.manager.CommandExecutor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -40,7 +41,7 @@ public class ClearCommand implements CommandExecutor {
             });
             return;
         }
-        files.commandLog("Clearing ´" + event.getMessageChannel().getName() + "´.");
+        files.log(LogType.CMD, "Clearing ´" + event.getMessageChannel().getName() + "´.");
         event.getChannel().asTextChannel().createCopy().queue(textChannel -> {
             if(textChannel.getName().equalsIgnoreCase("bot-commands")){
                 Main.botChannelID = textChannel.getId();
