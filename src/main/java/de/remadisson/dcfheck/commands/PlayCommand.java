@@ -49,7 +49,7 @@ public class PlayCommand implements CommandExecutor {
     @Override
     public void execute(SlashCommandInteractionEvent event) {
         Channel channel = event.getChannel();
-        if(!channel.getId().equalsIgnoreCase(Main.botChannelID) && !channel.getId().equalsIgnoreCase("811511713475067904")) {event.reply("Du kannst hier diesen Command nicht benutzen!").queue(msg -> {
+        if(!channel.getId().equalsIgnoreCase(Main.botChannelID) && !channel.getId().equalsIgnoreCase("811511713475067904") && !channel.getId().equals("1018146032414117971")) {event.reply("Du kannst hier diesen Command nicht benutzen!").queue(msg -> {
             msg.deleteOriginal().queueAfter(10, TimeUnit.SECONDS);
         }); return;}
 
@@ -76,5 +76,6 @@ public class PlayCommand implements CommandExecutor {
         }
 
         PlayerManager.getINSTANCE().loadAndPlay(event, args, link, !isUrl);
+
     }
 }
