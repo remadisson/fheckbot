@@ -1,13 +1,14 @@
 package de.remadisson.dcfheck;
 
-import de.remadisson.dcfheck.commands.ClearCommand;
-import de.remadisson.dcfheck.commands.PlayCommand;
-import de.remadisson.dcfheck.commands.SkipCommand;
-import de.remadisson.dcfheck.commands.StopCommand;
+import de.remadisson.dcfheck.api_remady.UpdateAPI;
+import de.remadisson.dcfheck.commands.*;
+import de.remadisson.dcfheck.enums.LogType;
 import de.remadisson.dcfheck.event.AuditLogger;
 import de.remadisson.dcfheck.event.PrivateMessages;
+import de.remadisson.dcfheck.lavaplayer.PlayerManager;
 import de.remadisson.dcfheck.manager.CommandManager;
 import de.remadisson.dcfheck.web.init;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -24,24 +25,27 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.io.IOException;
+import java.sql.SQLOutput;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Main extends ListenerAdapter {
 
     public static String botChannelID = null;
     public static JDA jda;
     public static Guild guild;
+
+    public static Dotenv dotenv;
     private static final String tokenFhot = "";
 
+    public static ExecutorService executor = Executors.newFixedThreadPool(20);
     public static void main(String[] args){
+        dotenv = Dotenv.configure().load();
         JDABuilder builder = JDABuilder.createDefault(args == null ? tokenFhot : (args.length == 0 ? tokenFhot : (args[0] == null ? tokenFhot : args[0])));
 
-        // Disable parts of the cache
         builder.disableCache(CacheFlag.MEMBER_OVERRIDES);
-        // Enable the bulk delete event
         builder.setBulkDeleteSplittingEnabled(false);
-        // Set activity (like "playing Something")
         builder.setActivity(Activity.watching("DUCK YOU!"));
 
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
@@ -61,8 +65,6 @@ public class Main extends ListenerAdapter {
         commandManager.add(new ClearCommand());
         commandManager.add(new SkipCommand());
         commandManager.add(new StopCommand());
-
-        // Registering AuditLogger -> Logs AuditLogs into a channel.
         builder.addEventListeners(new AuditLogger());
         builder.addEventListeners(new Main());
         builder.addEventListeners(commandManager);
@@ -81,19 +83,17 @@ public class Main extends ListenerAdapter {
     }
 
     @Override
-    public void onReady(ReadyEvent e){
+    public void onReady(ReadyEvent e) {
         System.out.println(new GregorianCalendar().getTime().toLocaleString() + " > Ready!");
         guild = jda.getGuildById("763096399071674438");
 
-        if(botChannelID == null){
+        if (botChannelID == null) {
             botChannelID = jda.getTextChannelsByName("bot-commands", false).get(0).getId();
         }
 
         init.onExpress();
-    }
-
-    @Override
-    public void onShutdown(@NotNull ShutdownEvent event) {
-        jda.getPresence().setPresence(OnlineStatus.OFFLINE, false);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            PlayerManager.getINSTANCE().stopAndClearPlaying(guild);
+        }));
     }
 }
