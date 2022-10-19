@@ -21,9 +21,10 @@ public class PrivateMessages extends ListenerAdapter {
             if(!friendIDs.contains(event.getAuthor().getId())){
                 if(event.getAuthor().getMutualGuilds().get(0).getMemberById(event.getAuthor().getId()).getVoiceState().inAudioChannel()){
                     event.getAuthor().getMutualGuilds().get(0).moveVoiceMember(Main.jda.getGuilds().get(0).getMemberById(event.getAuthor().getId()), null).queue();
+                    event.getChannel().sendMessage("Fick dich.").queue();
+                    return;
+                }
                 }
             }
-            event.getChannel().sendMessage("Fick dich.").queue();
         }
     }
-}
