@@ -8,16 +8,16 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.remadisson.dcfheck.Main;
+import de.remadisson.dcfheck.api_remady.UpdateAPI;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class PlayerManager {
 
@@ -33,8 +33,10 @@ public class PlayerManager {
         AudioSourceManagers.registerLocalSource(this.audioPlayerManager);
     }
 
-    public GuildMusicManager getMusicManager(Guild guild){
+    public GuildMusicManager getMusicManager(){
+        Guild guild = Main.guild;
         return this.musicManagers.computeIfAbsent(guild.getIdLong(), (guildID) -> {
+
             final GuildMusicManager guildMusicManager = new GuildMusicManager(this.audioPlayerManager);
             guild.getAudioManager().setSendingHandler(guildMusicManager.getSendHandler());
             return guildMusicManager;
@@ -42,7 +44,7 @@ public class PlayerManager {
     }
 
     public void loadAndPlay(SlashCommandInteractionEvent event, String args, String trackURL, boolean isSearch){
-        final GuildMusicManager musicManager = this.getMusicManager(Objects.requireNonNull(event.getGuild()));
+        final GuildMusicManager musicManager = this.getMusicManager();
         this.audioPlayerManager.loadItemOrdered(musicManager, trackURL, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
@@ -62,8 +64,14 @@ public class PlayerManager {
                     }
                     event.reply("Hinzufügen von  `" + tracks.size() + "` Tracks von der Playlist `" + audioPlaylist.getName() + "`\nJetzt spielt: `" + musicManager.audioPlayer.getPlayingTrack().getInfo().title + "` von `" + musicManager.audioPlayer.getPlayingTrack().getInfo().author + "`").queue();
                 }
-
-
+                /**
+                 * PUSHING UPDATE
+                 */
+                try {
+                    UpdateAPI.sendAsyncUpdate("initiate");
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             @Override
@@ -73,27 +81,37 @@ public class PlayerManager {
 
             @Override
             public void loadFailed(FriendlyException e) {
-
+                
             }
         });
     }
 
-
+    /**
+     * STOP
+     * @param guild
+     */
     public void stopAndClearPlaying(Guild guild){
-        final GuildMusicManager gm = PlayerManager.getINSTANCE().getMusicManager(guild);
+        final GuildMusicManager gm = PlayerManager.getINSTANCE().getMusicManager();
         gm.scheduler.audioPlayer.stopTrack();
         gm.scheduler.queue.clear();
         disconnectAudio(guild);
+
+        /**
+         * PUSHING UPDATE
+         */
+        try {
+            UpdateAPI.sendAsyncUpdate("stop3");
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     public void nextTrack(SlashCommandInteractionEvent event){
-        //TODO NOT CAST TO TEXTCHANNEL
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
+        final GuildMusicManager musicManager = this.getMusicManager();
         if(musicManager.scheduler.queue.isEmpty()) {
             event.reply("Die Playlist ist leer.").queue();
-            stopAndClearPlaying(textChannel.getGuild());
+            stopAndClearPlaying(Main.guild);
             return;
         }
 
