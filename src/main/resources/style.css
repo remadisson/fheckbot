@@ -1,0 +1,132 @@
+html, body {
+    background-color: #121212;
+    font-family: "Ubunto Mono", monospace;
+    color: #DDDDDD;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#navbar {
+    background-color: #1E1E1E;
+    text-align: center;
+    padding: 1px;
+}
+
+.branding {
+    color: #5B2AC3;
+    font-size: 2rem;
+}
+
+#currentlyNotPlaying {
+    background-color: #1F1F1F;
+    width: 30%;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1%;
+    text-align: center;
+    border: #c62828 solid 1px;
+    border-radius: 10px;
+}
+
+#music-content {
+    margin: 1.5% 2rem 0.2rem;
+    display: flex;
+}
+
+.music-column {
+    padding-right: 1%;
+    border-radius: 10px;
+}
+@media only screen and (max-width: 768px){
+    #music-content{
+        display:block;
+    }
+    #left-column{
+        width: auto;
+        margin: auto;
+    }
+}
+
+@media only screen and (min-width: 768px){
+    #left-column {
+        width: 30%;
+        margin-right: 1%;
+    }
+}
+
+#currentSong {
+    outline: #5B2AC3 solid 2px;;
+    padding: 10px;
+}
+
+.background {
+    background-color: #1F1F1F;
+}
+
+#queuedSongs {
+    flex-grow: 1;
+    padding-left: 1%;
+}
+
+#currentTrackImage {
+    display: block;
+    margin: auto;
+    width: 50%;
+    border-radius: 10%;
+}
+
+.currentTrack {
+    font-size: 1.1rem;
+}
+
+#currentTrackTitle {
+    text-decoration: underline;
+    text-decoration-color: #5B2AC3;
+    color: #DDDDDD;
+}
+
+.queueItem {
+    font-size: 1.1rem;
+}
+
+#skipper {
+    display: block;
+    width: auto;
+    margin-top: 2%;
+    padding-top: 0.01rem;
+    padding-bottom: 1rem;
+    border-radius: 10px;
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+}
+
+#skipInput {
+    background-color: #1F1F1F;
+    color: #DDDDDD;
+    width: 20%;
+    padding: 10px;
+    margin: 0 8px;
+    border: none;
+    border-bottom: 2px solid #5B2AC3;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
+
+#skipButton {
+    background-color: #5B2AC3; /* Green */
+    border: none;
+    color: white;
+    margin: 1rem;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#skipButton:hover {
+    cursor: pointer;
+}

@@ -2,58 +2,196 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Fhot's Warteschlange</title>
+    <title>FhotBot</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="background-color: #121212; color: #DDDDDD; font-family: Arial; margin: 0; padding: 0;">
-<div id="navbar" style="background-color: #1E1E1E; margin-top: -10px; padding-left: 2%; padding-top: 10px; padding-bottom: 5px; box-shadow: 5px 5px 4px #090909;">
-    <h2 id="headline">FhotBots Warteschlange</h2>
+<body>
+<div id="navbar">
+    <span class="branding"><h1 class="branding">FHOTBOT WARTESCHLANGE</h1></span>
 </div>
 
-<br>
-
-<!--TODO ADDING SKIP -->
-
-<div id="currentTrackDiv" style="margin-left: 2%; margin-right: 40%; padding: 0.25% 2% 1%; background-color: #292929; border-radius: 15px; box-shadow: 5px 5px 4px #090909;">
-    <h3 id = "currentTrackHeadline">Derzeit spielt:</h3>
-    <span><a id="currentTrack" style="color: #DDDDDD; text-decoration: none;">Platzhalter</a></span>
+<div id="currentlyNotPlaying">
+    <h3>Es wird momentan nichts wiedergegeben.</h3>
 </div>
 
-<br>
+<div id="music-content">
+   <div id="left-column" class ="music-column">
+        <div id="currentSong" class="music-column background">
+            <h2 id="currentlyPlayingIndex" class="headline">Aktuelle Wiedergabe:</h2>
+        </div>
 
-<div id="queueDiv" style="margin-left: 2%; margin-right: 40%; padding: 0.25% 2% 1%;background-color: #292929; border-radius: 15px; box-shadow: 5px 5px 4px #090909;">
-    <h4 id="queuedHeadline">Als nächstes:</h4>
-    <ul id="queue" style="list-style-type: value;">
-    </ul>
+       <div id="skipper" class="background">
+           <h2 id="skipHeadline">Song überspringen:</h2>
+           <form id="skipForm">
+               <label>
+                   <label for="skipInput">Skip Index</label>
+                   <input id="skipInput" type="number" form="skipForm" value="1" onkeypress="ClickFunction(this)">
+                   <input type="button" id="skipButton" onclick="ClickFunction(this)" value="Senden">
+               </label>
+           </form>
+       </div>
+   </div>
+    <div id="queuedSongs" class="music-column background">
+        <h2 id="queueIndex">Warteschlange:</h2>
+        <a id="queueEmpty">Warteschlange ist derzeit leider leer.</a>
+    </div>
 </div>
 
-<script>function updateData() {$.getJSON("https://remady.me/queue", function(data){
-    if(data.status === 404){
-        document.getElementById("currentTrackHeadline").innerText = data.message + " - " + data.status;
-        document.getElementById("currentTrack").hidden = true;
-        document.getElementById("queuedHeadline").hidden = true;
-        document.getElementById("queueDiv").hidden = true;
-        return;
+<script type="text/javascript">
+    //document.getElementById("currentlyNotPlaying").hidden = true;
+    document.getElementById("left-column").hidden = true;
+    document.getElementById("queuedSongs").hidden = true;
+    let currentTitle = null;
+
+    const fetchLink = "https://www.remady.me";
+    function createPage(){
+        $.getJSON(fetchLink+"/fhot", function(jsonData) {
+            let status = jsonData.status;
+            if(status === 404){
+                document.getElementById("currentlyNotPlaying").hidden = false;
+                document.getElementById("queuedSongs").hidden = true;
+                document.getElementById("queueEmpty").hidden = true;
+                document.getElementById("left-column").hidden = true;
+
+                return;
+            }
+
+            if(status === 200){
+                document.getElementById("currentlyNotPlaying").hidden = true;
+                document.getElementById("left-column").hidden = false;
+                document.getElementById("queuedSongs").hidden = false;
+                document.getElementById("queueEmpty").hidden = true;
+
+                setCurrentlyPlaying(jsonData);
+                setQueue(jsonData);
+            }
+        });
     }
 
-    let currentTrack = data.currentlyPlaying;
-    document.getElementById("currentTrack").innerText = currentTrack.title + " von " + currentTrack.author + " (" + currentTrack.length + ")";
-    document.getElementById("currentTrack").setAttribute("href", currentTrack.link);
+    function setCurrentlyPlaying(jsonData){
+        const currentPlaying = jsonData.currentlyPlaying;
+        const redundant = "https://www.youtube.com/watch?v=";
+        const link = currentPlaying.link;
+        const videoID = link.substring(redundant.length, link.length);
 
-    for(let i = 0; i < data.queue.length; i++){
-        const queuedTrack = data.queue[i];
-        let listItem = document.createElement('li');
-        let anchor = document.createElement("a");
-        anchor.innerText = queuedTrack.title + " von " + queuedTrack.author + " (" + queuedTrack.length + ")"
-        anchor.setAttribute("href", queuedTrack.link);
-        anchor.setAttribute("style", "color: #DDDDDD; text-decoration: none;");
-        listItem.appendChild(anchor);
-        listItem.setAttribute("name", "queueListItems");
-        document.getElementById("queue").appendChild(listItem);
+        let currentTrackTitle = document.createElement("a");
+        currentTrackTitle.setAttribute("id", "currentTrackTitle");
+        currentTrackTitle.setAttribute("class", "currentTrack");
+        currentTrackTitle.setAttribute("href", currentPlaying.link);
+        currentTrackTitle.setAttribute("target", "_blank");
+        currentTrackTitle.innerText =  "Titel: " + currentPlaying.title;
+        currentTitle = currentPlaying.title;
+
+        let currentTrackInterpret = document.createElement("a");
+        currentTrackInterpret.setAttribute("id", "currentTrackArtist");
+        currentTrackInterpret.setAttribute("class", "currentTrack");
+        currentTrackInterpret.innerText = "Interpret: " + currentPlaying.author;
+
+        let currentTrackLength = document.createElement("a");
+        currentTrackLength.setAttribute("id", "currentTrackLength");
+        currentTrackLength.setAttribute("class", "currentTrack");
+        currentTrackLength.innerText =  "Länge: " + currentPlaying.length;
+
+
+        let img = document.createElement("img");
+        img.setAttribute("class", "music-column");
+        img.setAttribute("id", "currentTrackImage");
+        img.setAttribute("src", "http://img.youtube.com/vi/" + videoID + "/hqdefault.jpg");
+
+        let currentlyPlayingIndex = document.getElementById("currentlyPlayingIndex");
+        let currentPlayingCarrier = document.createElement("div");
+        currentPlayingCarrier.setAttribute("id", "currentPlayingCarrier");
+
+        currentPlayingCarrier.append(document.createElement("br"));
+        currentPlayingCarrier.append(currentTrackTitle);
+        currentPlayingCarrier.append(document.createElement("br"));
+        currentPlayingCarrier.appendChild(currentTrackInterpret);
+        currentPlayingCarrier.append(document.createElement("br"));
+        currentPlayingCarrier.append(currentTrackLength);
+        currentPlayingCarrier.append(document.createElement("br"));
+        currentPlayingCarrier.appendChild(img);
+        currentlyPlayingIndex.appendChild(currentPlayingCarrier);
     }
 
-})}
-updateData();
+    function setQueue(jsonData) {
+        if(jsonData.queue === undefined || jsonData.queue === null || jsonData.queue.length === 0){
+            document.getElementById("queueEmpty").hidden = false;
+            return;
+        }
+
+        let queueIndex = document.getElementById("queueIndex");
+        let queue = document.createElement("div");
+        queue.setAttribute("id", "queueCarrier");
+        for(let i = 0; i < jsonData.queue.length; i++){
+            const queuedTrack = jsonData.queue[i];
+
+            let title = document.createElement("a");
+            title.setAttribute("class", "queueItem")
+            if(i > 8){
+            title.innerText = (i + 1) + ". " +  queuedTrack.title;
+            }
+            if(i <= 8){
+                title.innerText = "0" + (i + 1) + ". " +  queuedTrack.title;
+            }
+            queue.append(document.createElement("br"));
+            queue.append(title);
+        }
+        queueIndex.appendChild(queue);
+    }
+
+    async function checkSongChange(title){
+        return new Promise(resolve => {
+            $.getJSON(fetchLink + "/fhot", function(data) {
+                if(data.status !== undefined && data.status === 200){
+                    let newTitle = data.currentlyPlaying.title;
+                    resolve({changed:!newTitle.includes(title), title:newTitle});
+                    return;
+                }
+                resolve({changed: true, title: undefined});
+            });
+        });
+    }
+
+    async function updatePage() {
+        if(currentTitle === null || currentTitle === undefined){
+            createPage();
+            return;
+        }
+
+        let status = await checkSongChange(currentTitle);
+        if(status.changed){
+            let playingCarrier = document.getElementById("currentPlayingCarrier");
+            if(playingCarrier !== undefined && playingCarrier !== null){
+                playingCarrier.remove();
+            }
+
+            let queueCarrier = document.getElementById("queueCarrier");
+            if(queueCarrier !== undefined && queueCarrier !== null) {
+                queueCarrier.remove();
+            }
+            createPage();
+        }
+    }
+
+    updatePage();
+    setInterval(updatePage, 1000*60);
+
+    function ClickFunction(event){
+        let index = document.getElementById("skipInput").value;
+        fetch(fetchLink + "/fhot/skip/" + index).then(callback => {
+            setTimeout(() => {
+                updatePage();
+            }, 1000);
+        });
+    }
+
+    document.getElementById("skipInput").addEventListener("keypress", function(event){
+        if(event.key === "Enter"){
+            event.preventDefault();
+        }
+    });
 
 </script>
 </body>
